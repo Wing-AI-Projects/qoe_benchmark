@@ -1,0 +1,24 @@
+.env
+.DS_Store
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vscode/
+.idea/
+
+# Personal / private docs — kept locally, not pushed
+turing-demo-project-plan.md
+design-doc-v1.md
+
+# Run outputs — one sample batch is committed; everything else is local-only
+trajectories/*
+!trajectories/batch_04196acd-4f69-4a6a-8daf-62c09fb22f8c.json
+!trajectories/task_01_a035029c-264f-49bd-aa17-bfc6834f344d.json
+!trajectories/task_02_fc0a31b6-60f1-4133-a6b6-5460cf8cae92.json
+!trajectories/task_03_cc14477d-fd80-4a4c-b929-94d1b7507ea8.json
+!trajectories/task_04_4dded4cb-e948-4f57-a4ef-426b64522883.json
+!trajectories/task_05_3921d740-6c9d-48cc-9760-0d3c844c0e2e.json
+!trajectories/task_06_d8e87cb2-4102-440d-91cf-78744767414c.json
+grades/*
+!grades/04196acd-4f69-4a6a-8daf-62c09fb22f8c/

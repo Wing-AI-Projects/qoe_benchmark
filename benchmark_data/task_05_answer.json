@@ -1,0 +1,74 @@
+{
+  "task_id": "05_non_recurring_expense_id",
+  "task_prompt": "# Task: Non-recurring expense identification\n\nYou are a Quality of Earnings (QoE) analyst conducting buy-side due diligence. You have three tools available in the agent loop:\n\n- `read_data(file_name)` \u2014 returns the raw contents of a CSV file.\n- `run_python(code)` \u2014 executes Python in a sandbox. Useful for summing the filtered set of items once you've classified them.\n- `submit_answer(answer, reasoning, flags)` \u2014 submits your final structured answer. Call this exactly once when you are done.\n\n## Input\n\n`task_05_gl_detail.csv` \u2014 FY2024 general ledger detail for operating expense accounts. Columns: `gl_account`, `description`, `period`, `amount`. Each row is a line item. Amounts can be negative for credits/recoveries.\n\n## Task\n\nReview every line item and classify each as either RECURRING or NON-RECURRING based on its description. Apply these criteria:\n\nA line is **non-recurring** if any of the following are true:\n\n1. The description explicitly states \"one-time\", \"non-recurring\", or names a discrete project (e.g., \"Project Phoenix\", \"ERP migration\").\n2. The cost type is inherently non-recurring in normal QoE convention \u2014 severance, M&A advisory fees, transaction-related legal, restructuring.\n3. The line shows a single occurrence within the fiscal year without an ongoing pattern.\n\nA line is **recurring** if the cost type is operational (rent, salaries, payroll, utilities, ongoing legal, recurring software subscriptions, ongoing insurance, ongoing accounting, depreciation, etc.) and the description does not indicate one-time nature.\n\nIf a line item is **ambiguous** (you can construct a plausible case for either classification \u2014 e.g., a large settlement, an unusual insurance recovery, a one-time but possibly repeatable spend), do NOT include it in the non-recurring adjustment. Instead, surface it in `flags` for buyer review.\n\n## Output\n\nCompute total operating expenses (sum of all line items including any credits), the non-recurring total (sum of items you classified as non-recurring), and adjusted opex (total minus non-recurring).\n\nWhen summarizing combined items in `non_recurring_items` (e.g., two ERP migration line items in different quarters), you may combine them under a single named entry as long as the amount is correctly summed.\n\n## Output schema\n\n```json\n{\n  \"answer\": {\n    \"total_opex\": <integer dollars>,\n    \"non_recurring_items\": [\n      {\n        \"description\": \"<descriptor for the item or combined items>\",\n        \"amount\": <integer dollars>,\n        \"rationale\": \"<1 sentence on why this is non-recurring>\"\n      }\n    ],\n    \"non_recurring_total\": <integer dollars>,\n    \"adjusted_opex\": <integer dollars>,\n    \"non_recurring_pct_of_opex\": <number, 1 decimal>\n  },\n  \"reasoning\": \"<2-4 sentence summary of your classification approach>\",\n  \"flags\": [\"<each flag as a short string, including ambiguous items for review>\"]\n}\n```\n",
+  "input_files": [
+    "task_05_gl_detail.csv"
+  ],
+  "answer": {
+    "total_opex": 4168000,
+    "non_recurring_items": [
+      {
+        "description": "Legal fees - M&A advisory (Project Phoenix)",
+        "amount": 250000,
+        "rationale": "Description explicitly identifies as M&A-related, deal-specific"
+      },
+      {
+        "description": "Severance - VP Sales departure",
+        "amount": 180000,
+        "rationale": "Severance is one-time personnel cost"
+      },
+      {
+        "description": "IT consulting - one-time ERP migration (Q2+Q3)",
+        "amount": 450000,
+        "rationale": "Description explicitly identifies as one-time migration; combined across Q2 and Q3"
+      }
+    ],
+    "non_recurring_total": 880000,
+    "adjusted_opex": 3288000,
+    "non_recurring_pct_of_opex": 21.1
+  },
+  "expected_flags": [
+    "Material non-recurring expense adjustment (>20% of opex)",
+    "Project Phoenix M&A advisory fees suggest prior or ongoing deal activity worth investigating",
+    "ERP migration cost of $450K spanned two quarters - verify project is truly complete and won't recur in FY25",
+    "Patent dispute settlement and insurance recovery items are ambiguous - flag for review rather than auto-adjust"
+  ],
+  "reasoning": "Reviewed 59 GL line items. Flagged items meeting any of three criteria: (1) description explicitly states one-time, non-recurring, or project-specific; (2) cost type is inherently non-recurring (severance, M&A advisory); (3) cost pattern shows single occurrence without ongoing nature. The ERP migration line items appear in Q2 and Q3 totaling $450K and are explicitly described as one-time. Non-recurring items total $880,000, or 21.1% of reported opex. Two items (patent dispute settlement, insurance recovery credit) are flagged for follow-up rather than auto-adjusted because the description does not clearly establish them as non-recurring.",
+  "tool_use_criteria": {
+    "minimum_tools_required": ["read_data", "submit_answer"],
+    "recommended_tools": ["run_python"],
+    "good_pattern": "Read the GL detail CSV, inspect line items and their descriptions, classify each as recurring or non-recurring based on context cues, then use Python to sum the non-recurring set. Typically 4-7 tool calls (more if the agent inspects line items in groups).",
+    "anti_patterns": [
+      "Classifying without reading descriptions carefully (will miss ambiguous items)",
+      "Aggressive flagging of all unusual amounts as non-recurring without textual justification (over-inclusion)",
+      "Failing to surface ambiguous items as flagged-for-review rather than confidently misclassifying them"
+    ]
+  },
+  "tolerance": {
+    "total_opex": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "non_recurring_total": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "adjusted_opex": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "non_recurring_pct_of_opex": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    },
+    "non_recurring_items": {
+      "type": "set_overlap",
+      "required_descriptions": [
+        "M&A advisory",
+        "Severance",
+        "ERP migration"
+      ],
+      "min_match": 3
+    }
+  }
+}

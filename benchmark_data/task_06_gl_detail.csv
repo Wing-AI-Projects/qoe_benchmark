@@ -1,0 +1,18 @@
+gl_account,account_type,description,period,amount
+4000,revenue,Product revenue,2024-FY,8000000
+6400,opex,Utilities,2024-FY,48000
+5000,cogs,Direct materials,2024-FY,3000000
+6500,opex,Software subscriptions - SaaS,2024-FY,82000
+6100,opex,Office rent,2024-FY,200000
+5200,cogs,Inbound freight,2024-FY,250000
+6210,opex,Salaries - Sales,2024-FY,250000
+6200,opex,Salaries - Engineering,2024-FY,480000
+6320,opex,Legal fees - M&A advisory (Project Phoenix),2024-FY,250000
+6230,opex,Payroll taxes & benefits,2024-FY,200000
+6900,opex,"Owner compensation (total, includes $220K above market)",2024-FY,400000
+4100,revenue,Service revenue,2024-FY,1500000
+6510,opex,IT consulting - one-time ERP migration,2024-FY,450000
+6240,opex,Severance - VP Sales departure,2024-FY,180000
+6220,opex,Salaries - G&A,2024-FY,180000
+6310,opex,Legal fees - general corporate,2024-FY,80000
+5100,cogs,Direct labor,2024-FY,1500000

@@ -1,0 +1,84 @@
+{
+  "task_id": "06_ebitda_bridge",
+  "task_prompt": "# Task: EBITDA bridge\n\nYou are a Quality of Earnings (QoE) analyst conducting buy-side due diligence. You have three tools available in the agent loop:\n\n- `read_data(file_name)` \u2014 returns the raw contents of a CSV file.\n- `run_python(code)` \u2014 executes Python in a sandbox.\n- `submit_answer(answer, reasoning, flags)` \u2014 submits your final structured answer. Call this exactly once when you are done.\n\n## Input\n\n`task_06_gl_detail.csv` \u2014 FY2024 general ledger detail spanning revenue, COGS, and operating expense accounts. Columns: `gl_account`, `account_type` (one of `revenue`, `cogs`, `opex`), `description`, `period`, `amount`.\n\n## External figure (provided by management)\n\n**Reported EBITDA per management financials: $1,950,000.**\n\nThis is your starting point. Your job is to bridge from reported EBITDA to adjusted EBITDA by identifying and quantifying standard QoE add-backs visible in the GL detail.\n\n## Task\n\nBuild the EBITDA bridge:\n\n1. Start from the reported EBITDA figure provided above.\n2. Review the GL detail and identify standard QoE adjustments. Look for:\n   - Non-recurring items (M&A advisory fees, severance, one-time IT or transformation projects, restructuring) \u2014 apply the same classification logic as a non-recurring expense analysis.\n   - Owner compensation normalization \u2014 if a GL line item discloses that owner pay is above market rate, the excess (NOT the full line amount) is the add-back.\n   - Any other clearly non-operating or non-recurring item that a buyer would normalize.\n3. Sum the adjustments and compute adjusted EBITDA = reported + adjustments.\n4. Verify that the reconciliation ties: reported + sum(adjustments) = adjusted.\n5. Compute adjustment magnitude as a percent of reported EBITDA.\n\nWhen you read a GL line item, parse the description carefully \u2014 the line amount and the add-back amount are not always the same number (e.g., a line representing owner compensation may state how much of the line is \"above market\" and therefore eligible for normalization).\n\n## Output schema\n\n```json\n{\n  \"answer\": {\n    \"reported_ebitda\": <integer dollars>,\n    \"adjustments\": [\n      {\n        \"name\": \"<short name for the adjustment>\",\n        \"amount\": <integer dollars, the add-back amount (not the full GL line)>,\n        \"type\": \"add-back\",\n        \"rationale\": \"<1 sentence on why this is a standard QoE adjustment>\"\n      }\n    ],\n    \"total_adjustments\": <integer dollars>,\n    \"adjusted_ebitda\": <integer dollars>,\n    \"adjustment_pct_of_reported\": <number, 1 decimal>\n  },\n  \"reasoning\": \"<2-4 sentence summary of bridge construction>\",\n  \"flags\": [\"<each flag as a short string>\"]\n}\n```\n\nVerify that `reported_ebitda + total_adjustments == adjusted_ebitda` before calling submit_answer.\n",
+  "input_files": [
+    "task_06_gl_detail.csv"
+  ],
+  "answer": {
+    "reported_ebitda": 1950000,
+    "adjustments": [
+      {
+        "name": "M&A advisory fees (non-recurring)",
+        "amount": 250000,
+        "type": "add-back",
+        "rationale": "Description explicitly identifies as M&A-related, deal-specific"
+      },
+      {
+        "name": "Severance - VP Sales (non-recurring)",
+        "amount": 180000,
+        "type": "add-back",
+        "rationale": "Severance is one-time personnel cost"
+      },
+      {
+        "name": "ERP migration consulting (non-recurring)",
+        "amount": 450000,
+        "type": "add-back",
+        "rationale": "Description explicitly identifies as one-time ERP migration"
+      },
+      {
+        "name": "Owner compensation normalization (excess over market)",
+        "amount": 220000,
+        "type": "add-back",
+        "rationale": "Description discloses $220K of total owner comp is above market rate; the market-rate portion remains in opex"
+      }
+    ],
+    "total_adjustments": 1100000,
+    "adjusted_ebitda": 3050000,
+    "adjustment_pct_of_reported": 56.4
+  },
+  "expected_flags": [
+    "Adjustment magnitude is material (>50% uplift to reported EBITDA) - buyer will scrutinize each item",
+    "Owner compensation normalization typically requires market comp benchmark to defend",
+    "Combination of M&A advisory + severance + ERP migration suggests significant one-time activity in FY24 - verify no recurring nature in FY25"
+  ],
+  "reasoning": "Started from reported EBITDA of $1,950,000 per management financials. Identified four standard QoE add-backs: (1) M&A advisory legal fees of $250K, deal-specific and non-recurring; (2) Severance of $180K, one-time personnel cost; (3) ERP migration consulting of $450K, explicitly one-time per the GL description; (4) Owner compensation normalization of $220K, representing excess over market-rate compensation as disclosed in the line item. Total adjustments of $1,100,000 bring adjusted EBITDA to $3,050,000, a 56.4% uplift from reported.",
+  "tool_use_criteria": {
+    "minimum_tools_required": ["read_data", "run_python", "submit_answer"],
+    "recommended_tools": [],
+    "good_pattern": "Read the GL detail CSV, identify candidate adjustments using the same classification logic as task 05, compute the sum of adjustments in Python, reconcile reported EBITDA + adjustments = adjusted EBITDA, submit with each adjustment named individually. Typically 5-8 tool calls.",
+    "anti_patterns": [
+      "Submitting an adjusted EBITDA number without naming the individual adjustments (loses the reconciliation structure)",
+      "Math errors in the reconciliation (reported + adjustments != stated adjusted)",
+      "Missing a standard QoE adjustment category (e.g., catching non-recurring items but missing owner compensation normalization)",
+      "Computing adjustments correctly but failing to verify they sum to the stated total"
+    ]
+  },
+  "tolerance": {
+    "reported_ebitda": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "total_adjustments": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "adjusted_ebitda": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "adjustment_pct_of_reported": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    },
+    "adjustments": {
+      "type": "set_overlap",
+      "required_descriptions": [
+        "M&A advisory",
+        "Severance",
+        "ERP migration",
+        "Owner compensation"
+      ],
+      "min_match": 4
+    }
+  }
+}

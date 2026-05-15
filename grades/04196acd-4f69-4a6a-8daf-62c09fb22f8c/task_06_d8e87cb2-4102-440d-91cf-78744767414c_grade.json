@@ -1,0 +1,59 @@
+{
+  "task_id": "task_06",
+  "run_id": "d8e87cb2-4102-440d-91cf-78744767414c",
+  "judge_model": "claude-opus-4-7",
+  "graded_at": "2026-05-15T07:15:52Z",
+  "correctness": {
+    "score": 3,
+    "rationale": "numeric 5/5 within tolerance; flags: All three expected flags are covered: materiality of adjustments (56.4% uplift), need for market comp benchmark on owner compensation, and concern about one-time items (ERP, M&A, severance) potentially recurring. Agent provided additional flags on D&A, period granularity, revenue disaggregation, and deal-process risks.",
+    "deterministic": {
+      "fields": {
+        "reported_ebitda": {
+          "ok": true,
+          "detail": "abs_diff=$0.00 tol=$100"
+        },
+        "total_adjustments": {
+          "ok": true,
+          "detail": "abs_diff=$0.00 tol=$100"
+        },
+        "adjusted_ebitda": {
+          "ok": true,
+          "detail": "abs_diff=$0.00 tol=$100"
+        },
+        "adjustment_pct_of_reported": {
+          "ok": true,
+          "detail": "abs_diff=0.000pp tol=1.0pp"
+        },
+        "adjustments": {
+          "ok": true,
+          "detail": "matched 4/4 required substrings"
+        }
+      },
+      "flags": {
+        "missing_flags": [],
+        "extra_flags": [
+          "No depreciation & amortization line items appear in the GL",
+          "All periods coded as '2024-FY' with no monthly breakdown",
+          "Service revenue is not disaggregated - recurring vs project-based mix and customer concentration",
+          "M&A legal fees suggest live deal/competitive auction execution risk",
+          "Severance indicates VP Sales leadership gap - pipeline risk and replacement cost"
+        ],
+        "all_present": true,
+        "any_present": true,
+        "summary": "All three expected flags are covered: materiality of adjustments (56.4% uplift), need for market comp benchmark on owner compensation, and concern about one-time items (ERP, M&A, severance) potentially recurring. Agent provided additional flags on D&A, period granularity, revenue disaggregation, and deal-process risks."
+      }
+    }
+  },
+  "tool_use": {
+    "score": 3,
+    "rationale": "Agent used all minimum_tools_required (read_data #1, run_python #2-5, submit_answer #6). Sequence follows good_pattern: read GL \u2192 explore \u2192 compute reported EBITDA \u2192 identify adjustments \u2192 verify remaining items \u2192 submit with each adjustment named individually. Call #5 (verifying no additional flags) is a prudent reconciliation check rather than redundant. Total of 6 calls fits within the 5-8 expected range. No anti-patterns triggered: adjustments are named individually, math reconciles ($1.95M + $1.1M = $3.05M), and standard categories including owner compensation normalization are captured.",
+    "deterministic": null
+  },
+  "reasoning": {
+    "score": 3,
+    "rationale": "The agent's reasoning is clean and traces directly to data: it first verified GL ties to reported EBITDA ($1.95M), then identified four standard QoE add-backs each tied to explicit GL descriptions (Project Phoenix M&A fees, one-time ERP migration, VP Sales severance, and the explicitly-disclosed $220K above-market owner comp). The reconciliation check was performed (1.95M + 1.1M = 3.05M). Edge cases were surfaced as flags: reliance on management's own market-rate disclosure for owner comp, no D&A visible, no monthly breakdown precluding seasonality analysis, and the materiality of adjustments (56.4%). Assumptions are stated (e.g., $220K excess from GL description). Minor gap: didn't explicitly justify why general corporate legal ($80K) was excluded, but the reasoning chain is otherwise explicit and well-traced.",
+    "deterministic": null
+  },
+  "trajectory_path": "trajectories/task_06_d8e87cb2-4102-440d-91cf-78744767414c.json",
+  "terminated_by": "submit_answer"
+}

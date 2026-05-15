@@ -1,0 +1,88 @@
+{
+  "task_id": "04_customer_churn_impact",
+  "task_prompt": "# Task: Customer churn impact (period-over-period)\n\nYou are a Quality of Earnings (QoE) analyst conducting buy-side due diligence. You have three tools available in the agent loop:\n\n- `read_data(file_name)` \u2014 returns the raw contents of a CSV file.\n- `run_python(code)` \u2014 executes Python in a sandbox with pandas, numpy, and the standard library.\n- `submit_answer(answer, reasoning, flags)` \u2014 submits your final structured answer. Call this exactly once when you are done.\n\n## Input\n\nTwo files, both with columns: `customer_id`, `customer_name`, `revenue`. You will need to read both.\n\n- `task_04_customers_fy2023.csv` \u2014 prior period (FY2023) revenue by customer.\n- `task_04_customers_fy2024.csv` \u2014 current period (FY2024) revenue by customer.\n\n## Definitions\n\n- **Churned customer**: present in FY2023 but absent in FY2024.\n- **New customer**: present in FY2024 but absent in FY2023.\n- **Retained customer**: present in both periods.\n- **Gross revenue retention (GRR)**: sum across retained customers of `min(prior_revenue, current_revenue)` divided by total prior period revenue, expressed as a percent. GRR caps each customer's contribution at their prior level so upsell does not count.\n- **Net revenue retention (NRR)**: sum across retained customers of `current_revenue` divided by total prior period revenue, expressed as a percent. NRR includes expansion on retained customers but EXCLUDES new logos.\n\nUse `customer_id` as the join key.\n\n## Task\n\nCompute and report:\n\n1. Total prior period revenue and total current period revenue.\n2. Count and dollar impact of churned customers (sum of their prior-period revenue).\n3. Named list of the churned customers (id, name, prior_revenue).\n4. Count of new customers and the sum of their current-period revenue.\n5. GRR and NRR per the definitions above.\n6. The top churned customer's prior revenue as a percent of total prior period revenue.\n\n## Output schema\n\n```json\n{\n  \"answer\": {\n    \"prior_period_revenue\": <integer dollars>,\n    \"current_period_revenue\": <integer dollars>,\n    \"churned_customer_count\": <integer>,\n    \"churned_customer_dollar_impact\": <integer dollars>,\n    \"churned_customers\": [\n      {\"customer_id\": \"<id>\", \"customer_name\": \"<name>\", \"prior_revenue\": <int>}\n    ],\n    \"new_customer_count\": <integer>,\n    \"new_customers_dollar_value\": <integer dollars>,\n    \"gross_revenue_retention_pct\": <number, 1 decimal>,\n    \"net_revenue_retention_pct\": <number, 1 decimal>,\n    \"top_churned_customer_pct_of_prior\": <number, 1 decimal>\n  },\n  \"reasoning\": \"<2-4 sentence summary including the headline-vs-underlying signal>\",\n  \"flags\": [\"<each flag as a short string>\"]\n}\n```\n",
+  "input_files": [
+    "task_04_customers_fy2023.csv",
+    "task_04_customers_fy2024.csv"
+  ],
+  "answer": {
+    "prior_period_revenue": 5000000,
+    "current_period_revenue": 5880000,
+    "churned_customer_count": 3,
+    "churned_customer_dollar_impact": 1200000,
+    "churned_customers": [
+      {
+        "customer_id": "C003",
+        "customer_name": "Coastal Logistics",
+        "prior_revenue": 600000
+      },
+      {
+        "customer_id": "C005",
+        "customer_name": "Evergreen Mfg",
+        "prior_revenue": 400000
+      },
+      {
+        "customer_id": "C007",
+        "customer_name": "GreenLine Foods",
+        "prior_revenue": 200000
+      }
+    ],
+    "new_customer_count": 4,
+    "new_customers_dollar_value": 1800000,
+    "gross_revenue_retention_pct": 76.0,
+    "net_revenue_retention_pct": 81.6,
+    "top_churned_customer_pct_of_prior": 12.0
+  },
+  "expected_flags": [
+    "Gross revenue retention below 80% threshold",
+    "Material single-customer churn: Coastal Logistics at >10% of prior revenue",
+    "Headline revenue growth masks customer base churn - new customer acquisition is replacing churned customers"
+  ],
+  "reasoning": "Identified 3 customers present in FY2023 but absent in FY2024 with prior revenue totaling $1,200,000. Identified 4 new customers in FY2024 contributing $1,800,000. Retained customers (17) kept $3,800,000 of their $3,800,000 prior revenue, yielding GRR of 76.0%. NRR including upsell on retained customers (but excluding new logos) is 81.6%. Top churned customer is Coastal Logistics at $600,000, which is 12.0% of prior period revenue.",
+  "tool_use_criteria": {
+    "minimum_tools_required": ["read_data", "run_python", "submit_answer"],
+    "recommended_tools": [],
+    "good_pattern": "Read both customer CSVs (read_data called at least twice), use Python to compute set differences (churned, retained, new), compute dollar-weighted impact and retention ratios, then submit. Typically 5-7 tool calls because two file reads are needed.",
+    "anti_patterns": [
+      "Reading only one of the two CSVs (incomplete data, will fail correctness)",
+      "Computing set differences in natural language rather than Python (error-prone for any non-trivial customer count)",
+      "Reporting only headline revenue change without breaking out churn vs new customer contribution (misses the eval's main signal)"
+    ]
+  },
+  "tolerance": {
+    "prior_period_revenue": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "current_period_revenue": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "churned_customer_count": {
+      "type": "exact_int"
+    },
+    "churned_customer_dollar_impact": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "new_customer_count": {
+      "type": "exact_int"
+    },
+    "new_customers_dollar_value": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "gross_revenue_retention_pct": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    },
+    "net_revenue_retention_pct": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    },
+    "top_churned_customer_pct_of_prior": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    }
+  }
+}

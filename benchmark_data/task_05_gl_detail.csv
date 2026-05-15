@@ -1,0 +1,60 @@
+gl_account,description,period,amount
+6230,Payroll taxes & benefits,2024-Q4,115000
+6500,Software subscriptions - SaaS,2024-Q1,30000
+6320,Legal fees - M&A advisory (Project Phoenix),2024-Q2,250000
+6900,Office supplies,2024-Q4,10000
+6310,Legal fees - general corporate,2024-Q1,18000
+6600,Insurance premium - D&O annual,2024-Q1,95000
+6200,Salaries - Engineering,2024-Q1,220000
+6910,Accounting & audit,2024-Q1,15000
+6240,Severance - VP Sales departure,2024-Q3,180000
+6200,Salaries - Engineering,2024-Q4,235000
+6230,Payroll taxes & benefits,2024-Q2,110000
+6700,Marketing & advertising,2024-Q3,50000
+6800,Travel & entertainment,2024-Q4,20000
+6100,Office rent - HQ,2024-Q4,50000
+6200,Salaries - Engineering,2024-Q3,230000
+6100,Office rent - HQ,2024-Q1,50000
+6920,Depreciation expense,2024-Q3,30000
+6100,Office rent - HQ,2024-Q2,50000
+6900,Office supplies,2024-Q1,9000
+6510,IT consulting - one-time ERP migration,2024-Q2,200000
+6920,Depreciation expense,2024-Q4,30000
+6610,One-time insurance recovery - flood claim (credit),2024-Q1,-50000
+6500,Software subscriptions - SaaS,2024-Q3,30000
+6920,Depreciation expense,2024-Q2,30000
+6310,Legal fees - general corporate,2024-Q3,20000
+6100,Office rent - HQ,2024-Q3,50000
+6210,Salaries - Sales,2024-Q3,130000
+6230,Payroll taxes & benefits,2024-Q3,115000
+6400,Utilities,2024-Q4,12000
+6900,Office supplies,2024-Q2,10000
+6310,Legal fees - general corporate,2024-Q2,22000
+6500,Software subscriptions - SaaS,2024-Q2,30000
+6210,Salaries - Sales,2024-Q2,130000
+6700,Marketing & advertising,2024-Q4,50000
+6910,Accounting & audit,2024-Q3,15000
+6310,Legal fees - general corporate,2024-Q4,20000
+6220,Salaries - G&A,2024-Q2,85000
+6800,Travel & entertainment,2024-Q1,18000
+6400,Utilities,2024-Q3,13000
+6510,IT consulting - one-time ERP migration,2024-Q3,250000
+6500,Software subscriptions - SaaS,2024-Q4,30000
+6800,Travel & entertainment,2024-Q3,20000
+6920,Depreciation expense,2024-Q1,30000
+6700,Marketing & advertising,2024-Q2,52000
+6900,Office supplies,2024-Q3,11000
+6700,Marketing & advertising,2024-Q1,48000
+6330,Settlement - pre-existing patent dispute (Acme litigation),2024-Q4,75000
+6910,Accounting & audit,2024-Q2,15000
+6230,Payroll taxes & benefits,2024-Q1,110000
+6200,Salaries - Engineering,2024-Q2,225000
+6910,Accounting & audit,2024-Q4,15000
+6210,Salaries - Sales,2024-Q1,130000
+6220,Salaries - G&A,2024-Q4,85000
+6220,Salaries - G&A,2024-Q3,85000
+6210,Salaries - Sales,2024-Q4,130000
+6800,Travel & entertainment,2024-Q2,22000
+6220,Salaries - G&A,2024-Q1,85000
+6400,Utilities,2024-Q1,12000
+6400,Utilities,2024-Q2,11000

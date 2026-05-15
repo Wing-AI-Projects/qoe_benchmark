@@ -1,0 +1,56 @@
+{
+  "task_id": "task_01",
+  "run_id": "a035029c-264f-49bd-aa17-bfc6834f344d",
+  "judge_model": "claude-opus-4-7",
+  "graded_at": "2026-05-15T07:14:26Z",
+  "correctness": {
+    "score": 3,
+    "rationale": "numeric 5/5 within tolerance; flags: Both expected flags are present: Acme Corp at 25% covers the top-1 >20% threshold, and top-5 at 68% covers the top-5 >50% threshold (also reinforced by top-3 at 52%). Agent included additional concerns about distribution shape and contract risk.",
+    "deterministic": {
+      "fields": {
+        "top_1_pct": {
+          "ok": true,
+          "detail": "abs_diff=0.000pp tol=1.0pp"
+        },
+        "top_3_pct": {
+          "ok": true,
+          "detail": "abs_diff=0.000pp tol=1.0pp"
+        },
+        "top_5_pct": {
+          "ok": true,
+          "detail": "abs_diff=0.000pp tol=1.0pp"
+        },
+        "total_revenue": {
+          "ok": true,
+          "detail": "abs_diff=$0.00 tol=$100"
+        },
+        "top_customer": {
+          "ok": true,
+          "detail": "agent='Acme Corp' ref='Acme Corp'"
+        }
+      },
+      "flags": {
+        "missing_flags": [],
+        "extra_flags": [
+          "Bimodal customer distribution between top 5 and remaining 75 customers",
+          "Loss of top 2-3 customers would be material; scrutinize contract/renewal risk"
+        ],
+        "all_present": true,
+        "any_present": true,
+        "summary": "Both expected flags are present: Acme Corp at 25% covers the top-1 >20% threshold, and top-5 at 68% covers the top-5 >50% threshold (also reinforced by top-3 at 52%). Agent included additional concerns about distribution shape and contract risk."
+      }
+    }
+  },
+  "tool_use": {
+    "score": 3,
+    "rationale": "Call 1 reads the CSV once, call 2 uses run_python to compute totals and top-N ratios, call 3 submits the answer with flags and reasoning. This matches the good_pattern exactly (3 calls, within the 3-5 range), no redundant reads, no anti-patterns triggered, and tool inputs are well-formed.",
+    "deterministic": null
+  },
+  "reasoning": {
+    "score": 2,
+    "rationale": "The agent's reasoning is coherent and traces directly to the data: it loaded the CSV, computed totals and concentration ratios via Python, and surfaced the bimodal distribution (5 large customers vs 75 small ones) as a key insight. Flags are specific, quantified, and tied to figures from the analysis. Minor gaps: the agent didn't explicitly state assumptions (e.g., treating each row as a unique customer, no deduplication check, no check for negative/null revenue), and didn't flag potential data-quality edge cases like the suspiciously round $10M total. Still, the reasoning chain is clear and a careful reader can follow it with minimal gap-filling.",
+    "deterministic": null
+  },
+  "trajectory_path": "trajectories/task_01_a035029c-264f-49bd-aa17-bfc6834f344d.json",
+  "terminated_by": "submit_answer"
+}

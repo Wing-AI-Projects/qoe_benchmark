@@ -1,0 +1,57 @@
+{
+  "task_id": "task_05",
+  "run_id": "3921d740-6c9d-48cc-9760-0d3c844c0e2e",
+  "judge_model": "claude-opus-4-7",
+  "graded_at": "2026-05-15T07:15:33Z",
+  "correctness": {
+    "score": 1,
+    "rationale": "numeric 2/5 within tolerance; flags: Agent captured the material non-recurring percentage (22.9%), ERP migration two-quarter concern, and ambiguous insurance recovery item. However, the agent missed flagging Project Phoenix M&A advisory fees as suggesting deal activity to investigate. The agent also did not explicitly call out the patent dispute settlement as ambiguous, though it did flag the insurance recovery side. Extra flag: D&O insurance premium run-rate question, which isn't in the expected list.",
+    "deterministic": {
+      "fields": {
+        "total_opex": {
+          "ok": true,
+          "detail": "abs_diff=$0.00 tol=$100"
+        },
+        "non_recurring_total": {
+          "ok": false,
+          "detail": "abs_diff=$75000.00 tol=$100"
+        },
+        "adjusted_opex": {
+          "ok": false,
+          "detail": "abs_diff=$75000.00 tol=$100"
+        },
+        "non_recurring_pct_of_opex": {
+          "ok": false,
+          "detail": "abs_diff=1.800pp tol=1.0pp"
+        },
+        "non_recurring_items": {
+          "ok": true,
+          "detail": "matched 3/3 required substrings"
+        }
+      },
+      "flags": {
+        "missing_flags": [
+          "Project Phoenix M&A advisory fees suggest prior or ongoing deal activity worth investigating"
+        ],
+        "extra_flags": [
+          "Insurance premium - D&O annual ($95,000, Q1 only) - confirm run-rate vs one-time"
+        ],
+        "all_present": false,
+        "any_present": true,
+        "summary": "Agent captured the material non-recurring percentage (22.9%), ERP migration two-quarter concern, and ambiguous insurance recovery item. However, the agent missed flagging Project Phoenix M&A advisory fees as suggesting deal activity to investigate. The agent also did not explicitly call out the patent dispute settlement as ambiguous, though it did flag the insurance recovery side. Extra flag: D&O insurance premium run-rate question, which isn't in the expected list."
+      }
+    }
+  },
+  "tool_use": {
+    "score": 2,
+    "rationale": "Agent used both minimum required tools (read_data in call 1, submit_answer in call 5) and the recommended run_python (calls 2-4). Sequence matches the good_pattern: read GL, inspect/classify, sum with Python, submit. Call 2 reads and inspects, call 3 classifies with rationale, call 4 produces final summary - this is slightly verbose (could have combined 3 and 4 into one Python call), constituting one minor inefficiency. Agent properly surfaced ambiguous items (insurance recovery credit, D&O premium) as flags rather than misclassifying, avoiding anti-patterns. Justifications cite textual cues (\"Project Phoenix\", \"one-time ERP migration\"). One minor redundancy in splitting analysis across calls 3 and 4 keeps this from a clean 3.",
+    "deterministic": null
+  },
+  "reasoning": {
+    "score": 3,
+    "rationale": "The agent's reasoning is coherent and traces directly to the data. It explicitly identifies four non-recurring items with clear rationales tied to descriptors in the GL (M&A advisory, ERP migration, severance, settlement). It properly surfaces the flood insurance recovery credit as ambiguous (noting the directional impact if reversed) and questions whether the D&O annual premium is truly run-rate. It also flags the materiality of the 22.9% add-back percentage. The agent computed totals from data rather than guessing, and assumptions (e.g., treating ERP migration as one-time because it is explicitly labeled) are stated. Minor gaps: it doesn't explicitly discuss whether depreciation should be in opex or whether the flood recovery should be treated as a negative add-back, but it does raise the issue in flags. Strong overall, qualifying for a 3.",
+    "deterministic": null
+  },
+  "trajectory_path": "trajectories/task_05_3921d740-6c9d-48cc-9760-0d3c844c0e2e.json",
+  "terminated_by": "submit_answer"
+}

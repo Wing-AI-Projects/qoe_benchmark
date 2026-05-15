@@ -1,0 +1,62 @@
+{
+  "batch_id": "04196acd-4f69-4a6a-8daf-62c09fb22f8c",
+  "timestamp": "2026-05-15T06:59:36Z",
+  "model": "claude-sonnet-4-6",
+  "task_count": 6,
+  "runs": [
+    {
+      "task_id": "task_01",
+      "run_id": "a035029c-264f-49bd-aa17-bfc6834f344d",
+      "terminated_by": "submit_answer",
+      "iterations": 3,
+      "input_tokens": 7649,
+      "output_tokens": 2192,
+      "trajectory_path": "trajectories/task_01_a035029c-264f-49bd-aa17-bfc6834f344d.json"
+    },
+    {
+      "task_id": "task_02",
+      "run_id": "fc0a31b6-60f1-4133-a6b6-5460cf8cae92",
+      "terminated_by": "submit_answer",
+      "iterations": 5,
+      "input_tokens": 30360,
+      "output_tokens": 1755,
+      "trajectory_path": "trajectories/task_02_fc0a31b6-60f1-4133-a6b6-5460cf8cae92.json"
+    },
+    {
+      "task_id": "task_03",
+      "run_id": "cc14477d-fd80-4a4c-b929-94d1b7507ea8",
+      "terminated_by": "submit_answer",
+      "iterations": 4,
+      "input_tokens": 9535,
+      "output_tokens": 1976,
+      "trajectory_path": "trajectories/task_03_cc14477d-fd80-4a4c-b929-94d1b7507ea8.json"
+    },
+    {
+      "task_id": "task_04",
+      "run_id": "4dded4cb-e948-4f57-a4ef-426b64522883",
+      "terminated_by": "submit_answer",
+      "iterations": 6,
+      "input_tokens": 16706,
+      "output_tokens": 3009,
+      "trajectory_path": "trajectories/task_04_4dded4cb-e948-4f57-a4ef-426b64522883.json"
+    },
+    {
+      "task_id": "task_05",
+      "run_id": "3921d740-6c9d-48cc-9760-0d3c844c0e2e",
+      "terminated_by": "submit_answer",
+      "iterations": 5,
+      "input_tokens": 18023,
+      "output_tokens": 3353,
+      "trajectory_path": "trajectories/task_05_3921d740-6c9d-48cc-9760-0d3c844c0e2e.json"
+    },
+    {
+      "task_id": "task_06",
+      "run_id": "d8e87cb2-4102-440d-91cf-78744767414c",
+      "terminated_by": "submit_answer",
+      "iterations": 6,
+      "input_tokens": 16193,
+      "output_tokens": 2771,
+      "trajectory_path": "trajectories/task_06_d8e87cb2-4102-440d-91cf-78744767414c.json"
+    }
+  ]
+}

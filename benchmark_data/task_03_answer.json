@@ -1,0 +1,54 @@
+{
+  "task_id": "03_t3m_annualized_run_rate",
+  "task_prompt": "# Task: T3M annualized run rate vs LTM\n\nYou are a Quality of Earnings (QoE) analyst conducting buy-side due diligence. You have three tools available in the agent loop:\n\n- `read_data(file_name)` \u2014 returns the raw contents of a CSV file.\n- `run_python(code)` \u2014 executes Python in a sandbox with pandas, numpy, and the standard library.\n- `submit_answer(answer, reasoning, flags)` \u2014 submits your final structured answer. Call this exactly once when you are done.\n\n## Input\n\n`task_03_monthly_revenue.csv` \u2014 one row per month for the trailing 18 months. Columns: `month` (YYYY-MM string), `revenue`.\n\n## Reference date\n\n**2024-12-31** \u2014 use this as the period anchor.\n\n## Definitions\n\n- **T3M revenue**: sum of revenue across the three most recent months ending at the reference date (i.e., October, November, and December 2024).\n- **T3M annualized**: T3M revenue \u00d7 4. This represents the implied annualized run rate based on the most recent quarter.\n- **LTM revenue**: sum of revenue across the trailing twelve months ending at the reference date (i.e., January through December 2024).\n- **Variance %**: (T3M annualized \u2212 LTM) / LTM, expressed as a percent.\n\n## Task\n\n1. Compute T3M revenue, T3M annualized, and LTM revenue.\n2. Compute the variance of T3M annualized vs LTM as a percent.\n3. List the three months used for T3M.\n4. Interpret the divergence: does the monthly time series suggest organic growth, a one-time spike, or seasonality? Surface this judgment in the `reasoning` field and any appropriate flag.\n\n## Output schema\n\n```json\n{\n  \"answer\": {\n    \"t3m_revenue\": <integer dollars>,\n    \"t3m_annualized\": <integer dollars>,\n    \"ltm_revenue\": <integer dollars>,\n    \"variance_pct\": <number, 1 decimal>,\n    \"t3m_months\": [\"YYYY-MM\", \"YYYY-MM\", \"YYYY-MM\"]\n  },\n  \"reasoning\": \"<2-4 sentence summary including interpretation>\",\n  \"flags\": [\"<each flag as a short string>\"]\n}\n```\n",
+  "input_files": [
+    "task_03_monthly_revenue.csv"
+  ],
+  "answer": {
+    "t3m_revenue": 1890000,
+    "t3m_annualized": 7560000,
+    "ltm_revenue": 6585000,
+    "variance_pct": 14.8,
+    "t3m_months": [
+      "2024-10",
+      "2024-11",
+      "2024-12"
+    ]
+  },
+  "expected_flags": [
+    "T3M annualized materially above LTM (>10%)",
+    "Growth trend appears organic based on monotonic monthly increase, not driven by single anomalous month"
+  ],
+  "reasoning": "Summed revenue for 2024-10, 2024-11, 2024-12 = $1,890,000, multiplied by 4 to annualize: $7,560,000. LTM revenue (Jan-Dec 2024) = $6,585,000. T3M annualized is 14.8% above LTM, indicating recent quarter growth. Inspecting the monthly series, revenue grows monotonically from $460K (Jan 2024) to $650K (Dec 2024), supporting a real growth narrative rather than a one-time spike.",
+  "tool_use_criteria": {
+    "minimum_tools_required": ["read_data", "run_python", "submit_answer"],
+    "recommended_tools": [],
+    "good_pattern": "Read the monthly revenue CSV, filter to last 3 months using the reference date, compute T3M and LTM in Python, compute variance, then interpret the trend by inspecting monthly values. Typically 3-5 tool calls.",
+    "anti_patterns": [
+      "Using fewer than 3 months or more than 3 months for T3M (window definition error)",
+      "Computing variance correctly but skipping the qualitative interpretation step in reasoning (misses the second-order signal)",
+      "Multiple redundant run_python calls that recompute the same value"
+    ]
+  },
+  "tolerance": {
+    "t3m_revenue": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "t3m_annualized": {
+      "type": "dollar",
+      "abs": 400
+    },
+    "ltm_revenue": {
+      "type": "dollar",
+      "abs": 100
+    },
+    "variance_pct": {
+      "type": "ratio_pct",
+      "abs": 1.0
+    },
+    "t3m_months": {
+      "type": "set_equal"
+    }
+  }
+}
